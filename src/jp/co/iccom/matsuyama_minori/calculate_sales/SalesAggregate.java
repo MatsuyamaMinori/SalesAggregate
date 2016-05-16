@@ -20,7 +20,7 @@ public class SalesAggregate {
 	public static void main(String[] args) {
 
 		if(args.length != 1){
-			System.out.println("予期せぬエラーが発生しました.");
+			System.out.println("予期せぬエラーが発生しました");
 			return;
 		}
 
