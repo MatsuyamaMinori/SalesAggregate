@@ -24,49 +24,49 @@ public class SalesAggregate {
 			return;
 		}
 
-		HashMap<String, String> shopMap = new HashMap<String,String>();
-		HashMap<String, Long> shopTotal = new HashMap<String,Long>();
+		HashMap<String, String> shopMap = new HashMap<String, String>();
+		HashMap<String, Long> shopTotal = new HashMap<String, Long>();
 		if(!inputDefinition(args[0], shopMap, shopTotal, "branch.lst", "支店", "^\\d{3}$")){
 			return;
 		};
 
-		HashMap<String, String> productMap = new HashMap<String,String>();
-		HashMap<String, Long> productTotal = new HashMap<String,Long>();
+		HashMap<String, String> productMap = new HashMap<String, String>();
+		HashMap<String, Long> productTotal = new HashMap<String, Long>();
 		if(!inputDefinition(args[0], productMap, productTotal, "commodity.lst", "商品", "^\\w{8}$")){
 			return;
 		};
 
 
 		File sales = new File(args[0]);
-		String[] byType = sales.list(new RcdFilter());
-		Arrays.sort(byType);
+		String[] salesFile = sales.list(new RcdFilter());
+		Arrays.sort(salesFile);
 		BufferedReader br = null;
 
 		String shopCode = null;
 		String productCode = null;
 		Long sale;
 
-		for(int i=0; i<byType.length; ++i) {
+		for(int i=0; i<salesFile.length; ++i) {
 			ArrayList<String> elementList = new ArrayList<String>();
 
-			int minIndex = byType[0].indexOf(".");
-			int maxIndex = byType[byType.length - 1].indexOf(".");
+			int minIndex = salesFile[0].indexOf(".");
+			int maxIndex = salesFile[salesFile.length - 1].indexOf(".");
 
-			String characterMin = byType[0].substring(0, minIndex);
+			String characterMin = salesFile[0].substring(0, minIndex);
 			int nameMin = Integer.parseInt(characterMin);
 
-			String characterMax = byType[byType.length - 1].substring(0, maxIndex);
+			String characterMax = salesFile[salesFile.length - 1].substring(0, maxIndex);
 			int nameMax = Integer.parseInt(characterMax);
 
 
-			if(nameMin + byType.length - 1 != nameMax) {
+			if(nameMin + salesFile.length - 1 != nameMax) {
 				System.out.println("売上ファイル名が連番になっていません");
 				return;
 			}
 
 
 			try {
-				File inputFile = new File (args[0], byType[i]);
+				File inputFile = new File (args[0], salesFile[i]);
 				FileReader fr = new FileReader (inputFile);
 				br = new BufferedReader ( fr );
 				String Line;
@@ -75,7 +75,7 @@ public class SalesAggregate {
 				}
 
 				if(elementList.size() != 3) {
-					System.out.println(byType[i] + "のフォーマットが不正です");
+					System.out.println(salesFile[i] + "のフォーマットが不正です");
 					return ;
 				}
 
@@ -83,10 +83,10 @@ public class SalesAggregate {
 				productCode = elementList.get(1);
 				sale = Long.parseLong(elementList.get(2));
 
-				if(!aggregate(shopMap, shopCode, byType[i], "支店", shopTotal, sale)){
+				if(!aggregate(shopMap, shopCode, salesFile[i], "支店", shopTotal, sale)){
 					return;
 				};
-				if(!aggregate(productMap, productCode, byType[i], "商品", productTotal, sale)){
+				if(!aggregate(productMap, productCode, salesFile[i], "商品", productTotal, sale)){
 					return;
 				};
 
@@ -115,7 +115,7 @@ public class SalesAggregate {
 	}
 
 	private static boolean inputDefinition(String dir, HashMap<String, String> definition,
-			HashMap<String, Long> total, String name, String category, String regexp){
+			HashMap<String, Long> total, String name, String category, String regex){
 		BufferedReader br = null;
 		try {
 			File inputFile = new File (dir, name);
@@ -130,7 +130,7 @@ public class SalesAggregate {
 					return false;
 				}
 
-				if(!items[0].matches(regexp)) {
+				if(!items[0].matches(regex)) {
 					System.out.println(category + "定義ファイルのフォーマットが不正です");
 					return false;
 				}
@@ -189,11 +189,11 @@ public class SalesAggregate {
 
 			});
 
-			File outputFile = new File (dir,name);
+			File outputFile = new File (dir, name);
 			FileWriter fw = new FileWriter (outputFile);
 			bw = new BufferedWriter (fw);
-			for(Entry<String,Long> order : descendingList) {
-				bw.write(order.getKey() + "," + definition.get(order.getKey()) + "," + order.getValue() + "\n");
+			for(Entry<String,Long> totalOrder : descendingList) {
+				bw.write(totalOrder.getKey() + "," + definition.get(totalOrder.getKey()) + "," + totalOrder.getValue() + "\n");
 			}
 
 		} catch(IOException e) {
