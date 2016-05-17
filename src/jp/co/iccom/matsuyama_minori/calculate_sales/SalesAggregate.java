@@ -68,7 +68,7 @@ public class SalesAggregate {
 			try {
 				File inputFile = new File (args[0], salesFile[i]);
 				FileReader fr = new FileReader (inputFile);
-				br = new BufferedReader ( fr );
+				br = new BufferedReader (fr);
 				String Line;
 				while((Line = br.readLine()) != null) {
 					elementList.add(Line);
